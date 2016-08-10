@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Log;
+
 use App\Http\Requests;
 
 class UserController extends Controller
@@ -11,19 +11,45 @@ class UserController extends Controller
 
     public function store(Request $request){
 
+      $this->validate($request, [
+        'name' => 'required',
+        'email' => 'required|email',
+        'password' => 'required|min:5'
+      ]);
+
       $name = $request->input('name');
       $email = $request->input('email');
       $password = $request->input('password');
 
-      Log::info("Logger written as - It's Working!");
-      $monolog = Log::getMonolog();
-      var_dump($monolog);
-      //return json_decode($monolog['handlers'][0]);
+      $user = [
+        'name' => $name,
+        'email' => $email,
+        'password' => $password,
+        'signin' => [
+          'href' => 'api/v1/user/signin',
+          'method' => 'POST',
+          'params' => 'email, password'
+        ]
+      ];
+
+      $response = [
+        'msg' => 'User Created',
+        'user' => $user
+      ];
+
+      return response()->json($response, 201);
     }
 
     public function signin(Request $request){
+
+      $this->validate($request, [
+        'email' => 'required|email',
+        'password' => 'required'
+      ]);
+
       $email = $request->input('email');
       $password = $request->input('password');
-      return "It's Working!";
+
+      return "Signed In!";
     }
 }
